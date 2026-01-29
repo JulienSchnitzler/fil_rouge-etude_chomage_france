@@ -1,0 +1,15 @@
+name: env_chomage
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pandas
+  - numpy
+  - matplotlib
+  - seaborn
+  - openpyxl
+  - jupyterlab
+  - ipykernel
+  - requests
+  - pip
