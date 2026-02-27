@@ -1,6 +1,13 @@
 # Analyse du Chômage en France - Projet Fil Rouge
 
-Ce projet vise à analyser les dynamiques du marché du travail français en utilisant les données de l'INSEE et de la DARES. Il couvre l'acquisition, le nettoyage, l'analyse exploratoire et la modélisation des taux de chômage.
+Ce projet vise à modéliser et prédire les dynamiques du marché du travail français. Nous croisons les données de l'INSEE et de la DARES avec des indicateurs macroéconomiques (PIB, Inflation, Climat des affaires) pour comprendre les cycles du chômage.
+
+## Objectifs du projet
+
+- Acquisition : Centralisation de données multi-sources (Mensuelles, Trimestrielles, Annuelles).
+- Feature Engineering : Trimestrialisation des données, stationnarisation (taux de croissance), et création de signaux avancés (lags, Z-scores).
+- Analyse : Étude de la Loi d'Okun et des impacts démographiques (âge, sexe).
+P- rédiction : Modélisation statistique et Machine Learning.
 
 ## Installation rapide
 
@@ -9,21 +16,31 @@ Pour que nous ayons tous exactement la même configuration (versions de Python e
 ### 1. Cloner le projet
 ```bash
 git clone https://github.com/JulienSchnitzler/fil_rouge-etude_chomage_france
-cd ... A RAJOUTER ...
+cd fil_rouge-etude_chomage_france
 ```
 
-### 2. Créer l'environnement virtuel
+### 2. Si vous utilisez pip ...
+
+...
+
+### 2. Si vous utilisez uv ...
+
+...
+
+### 2. Si vous utilisez Conda ...
+
+#### a. Créer l'environnement virtuel
 Utilise le fichier `environment.yml` fourni pour recréer l'environnement :
 ```bash
 conda env create -f environment.yml
 ```
 
-### 3. Activer l'environnement
+#### b. Activer l'environnement
 ```bash
 conda activate env_chomage
 ```
 
-### 4. Lier l'environnement à Jupyter
+### c. Lier l'environnement à Jupyter
 ```bash
 python -m ipykernel install --user --name env_chomage --display-name "Python (Projet Chomage)"
 ```
