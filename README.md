@@ -6,7 +6,7 @@ Ce projet de data science vise à modéliser et prédire les dynamiques du march
 - Exploration : Corrélation entre indicateurs macroéconomiques (PIB, intérim, inflation) et le taux de chômage INSEE.
 - Feature Engineering : Trimestrialisation des données, stationnarisation (taux de croissance), et création de signaux avancés (lags, Z-scores).
 - Feature Selection : Utilisation de Lasso pour identifier les variables réellement motrices.
-- Analyse : Étude de la Loi d'Okun et des impacts démographiques (âge, sexe).
+- Analyse : Étude de la Loi d'Okun, la courbe de Phillips et des impacts démographiques (âge, sexe).
 - Benchmarking : Comparaison de modèles (Ridge, Random Forest, XGBoost, LSTM).
 - Forecasting : Simulation de 3 scénarios pour 2026 (Optimiste, Middle, Pessimiste).
 
@@ -35,7 +35,7 @@ Lancez Jupyter Lab  :
 ```bash
 jupyter lab
 ```
-
+Puis aller dans le dossier `src` (data/features/models) pour retrouver les différents notebooks.
 
 #### Via UV (recommandé, plus rapide !)
 Si vous utilisez [UV](https://github.com/astral-sh/uv), l'installation est quasi instantanée :
@@ -54,7 +54,7 @@ Lancer le projet
 ```bash
 uv run jupyter lab
 ```
-
+Puis aller dans le dossier `src` (data/features/models) pour retrouver les différents notebooks.
 
 #### Via Anaconda / Conda
 Idéal pour les environnements de Data Science isolés :
@@ -66,9 +66,10 @@ conda install --file requirements.txt
 # Ou via le fichier environment.yml :
 conda env create -f environment.yml
 ```
-
-
-Puis aller dans le dossier `src` (data/features/models) pour retrouver les différents notebooks.
+Puis lancer le projet
+```bash
+jupyter lab
+```
 
 ## Technologies
 - Data : Pandas, Numpy.
