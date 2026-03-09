@@ -1,0 +1,22 @@
+# Données (Trop lourdes pour GitHub)
+# data/raw/*
+# data/processed/*
+# docs/*.xlsx  # On garde le référentiel
+raw_data/
+python/
+
+# Environnement Python
+.env
+venv/
+env/
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+
+# Système & IDE
+.DS_Store
+.vscode/
+.idea/
+
+# Jupyter
+.virtual_documents/
