@@ -18,26 +18,8 @@ cd fil_rouge-etude_chomage_france
 ```
 
 ### 2. Configurer l'environnement
-#### Via Pip (standard)
-Sur Windows :
-```bash
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-```
-Sur Mac / Linux :
-```bash
-python3 -m venv venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-Lancez Jupyter Lab  :
-```bash
-jupyter lab
-```
-Puis aller dans le dossier `src` (data/features/models) pour retrouver les différents notebooks.
 
-#### Via UV (recommandé, plus rapide !)
+#### a) Via UV (recommandé, plus rapide !)
 Si vous utilisez [UV](https://github.com/astral-sh/uv), l'installation est quasi instantanée :
 ```bash
 uv sync
@@ -56,7 +38,26 @@ uv run jupyter lab
 ```
 Puis aller dans le dossier `src` (data/features/models) pour retrouver les différents notebooks.
 
-#### Via Anaconda / Conda
+#### b) Via Pip (standard)
+Sur Windows :
+```bash
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+```
+Sur Mac / Linux :
+```bash
+python3 -m venv venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+Lancez Jupyter Lab  :
+```bash
+jupyter lab
+```
+Puis aller dans le dossier `src` (data/features/models) pour retrouver les différents notebooks.
+
+#### c) Via Anaconda / Conda
 Idéal pour les environnements de Data Science isolés :
 ```bash
 conda create --name chomage_env python=3.10
