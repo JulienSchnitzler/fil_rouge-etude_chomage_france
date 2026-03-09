@@ -349,12 +349,14 @@ elif page == "🧠 Feature Importance":
 # =========================================================
 # PREDICTION
 # =========================================================
+
 elif page == "🔮 Prédiction":
-    st.title("🔮 Prédiction du chômage (baseline)")
+
+    st.title("🔮 Prédiction du chômage avec comparaison de plusieurs modèles")
 
     dff = df.dropna(subset=[DATE_COL, TARGET]).sort_values(DATE_COL).copy()
-    X_raw, y = prepare_xy(dff)
 
+    X_raw, y = prepare_xy(dff)
     X = clean_numeric(X_raw).select_dtypes(include=[np.number])
     X = X.replace([np.inf, -np.inf], np.nan)
 
@@ -362,25 +364,141 @@ elif page == "🔮 Prédiction":
         st.error("Aucune variable numérique disponible pour l'entraînement.")
         st.stop()
 
+    # =====================================================
+    # OPTION : SUPPRIMER LES VARIABLES TROP CORRÉLÉES À LA CIBLE
+    # =====================================================
+    corr_target = X.corrwith(y).abs()
+    threshold = st.slider(
+        "Seuil max de corrélation avec la cible",
+        min_value=0.50,
+        max_value=1.00,
+        value=0.90,
+        step=0.05,
+    )
+
+    cols_to_drop = corr_target[corr_target > threshold].index.tolist()
+    X = X.drop(columns=cols_to_drop, errors="ignore")
+
+    with st.expander("Voir les variables supprimées car trop corrélées à la cible"):
+        st.write(cols_to_drop if cols_to_drop else "Aucune")
+
+    if X.shape[1] == 0:
+        st.error("Toutes les variables ont été supprimées après filtrage.")
+        st.stop()
+
+    # =====================================================
+    # TRAIN / TEST SPLIT TEMPOREL
+    # =====================================================
     split = int(len(X) * 0.8)
+
     X_train, X_test = X.iloc[:split], X.iloc[split:]
     y_train, y_test = y.iloc[:split], y.iloc[split:]
 
-    model = Pipeline(
-        steps=[
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", StandardScaler()),
-            ("model", Ridge(alpha=1.0, random_state=42)),
-        ]
+    test_dates = dff.iloc[split:][DATE_COL].reset_index(drop=True)
+
+    # =====================================================
+    # MODÈLES
+    # =====================================================
+    from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+
+    models = {
+        "Ridge": Ridge(alpha=1.0),
+        "Random Forest": RandomForestRegressor(n_estimators=200, random_state=42),
+        "Gradient Boosting": GradientBoostingRegressor(random_state=42),
+    }
+
+    results = []
+    pred_df = pd.DataFrame(
+        {DATE_COL: test_dates, "Réel": y_test.reset_index(drop=True)}
     )
-    model.fit(X_train, y_train)
-    preds = model.predict(X_test)
 
-    mae = mean_absolute_error(y_test, preds)
-    rmse = np.sqrt(mean_squared_error(y_test, preds))
-    r2 = r2_score(y_test, preds)
+    for name, model in models.items():
 
-    m1, m2, m3 = st.columns(3)
-    m1.metric("MAE", f"{mae:.3f}")
-    m2.metric("RMSE", f"{rmse:.3f}")
-    m3.metric("R²", f"{r2:.3f}")
+        # scaler utile pour Ridge, pas gênant ici pour garder le même pipeline
+        pipe = Pipeline(
+            steps=[
+                ("imputer", SimpleImputer(strategy="median")),
+                ("scaler", StandardScaler()),
+                ("model", model),
+            ]
+        )
+
+        pipe.fit(X_train, y_train)
+        preds = pipe.predict(X_test)
+
+        mae = mean_absolute_error(y_test, preds)
+        rmse = np.sqrt(mean_squared_error(y_test, preds))
+        r2 = r2_score(y_test, preds)
+
+        results.append(
+            {
+                "Modèle": name,
+                "MAE": round(mae, 4),
+                "RMSE": round(rmse, 4),
+                "R²": round(r2, 4),
+            }
+        )
+
+        pred_df[name] = preds
+
+    results_df = pd.DataFrame(results).sort_values("RMSE")
+
+    # =====================================================
+    # MÉTRIQUES
+    # =====================================================
+    st.subheader("Comparaison des performances")
+    st.dataframe(results_df, use_container_width=True)
+
+    best_model_name = results_df.iloc[0]["Modèle"]
+    st.success(f"Modèle le plus performant selon le RMSE : {best_model_name}")
+
+    # =====================================================
+    # GRAPHIQUE : RÉEL + TOUS LES MODÈLES
+    # =====================================================
+    st.subheader("Suivi des différents modèles par rapport au taux de chômage réel")
+
+    import plotly.graph_objects as go
+
+    fig = go.Figure()
+
+    # Courbe réelle
+    fig.add_trace(
+        go.Scatter(
+            x=pred_df[DATE_COL],
+            y=pred_df["Réel"],
+            mode="lines",
+            name="Réel",
+            line=dict(width=3),
+        )
+    )
+
+    # Courbes des modèles
+    for model_name in models.keys():
+        fig.add_trace(
+            go.Scatter(
+                x=pred_df[DATE_COL],
+                y=pred_df[model_name],
+                mode="lines",
+                name=model_name,
+            )
+        )
+
+    fig.update_layout(
+        title="Comparaison des prédictions des modèles avec le taux de chômage réel",
+        xaxis_title="Date",
+        yaxis_title="Taux de chômage",
+        hovermode="x unified",
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.write(
+        "Ce graphique permet de comparer directement les prédictions de plusieurs modèles avec les valeurs réelles du taux de chômage. "
+        "Le modèle le plus pertinent est celui dont la courbe suit le plus fidèlement la trajectoire observée."
+    )
+
+    # =====================================================
+    # TABLEAU DES PRÉDICTIONS
+    # =====================================================
+    with st.expander("Voir le détail des valeurs prédites"):
+        st.dataframe(pred_df, use_container_width=True)
