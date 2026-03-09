@@ -17,13 +17,15 @@ from sklearn.linear_model import LassoCV, Ridge
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
 
+st.set_page_config(page_title="Chômage France", layout="wide")
+from pathlib import Path
 
 # --------------------------
 # CONFIG
 # --------------------------
-st.set_page_config(page_title="Chômage France", layout="wide")
 
-DEFAULT_CSV_PATH = "../data/processed/02_dataset_silver.csv"
+BASE_DIR = Path(__file__).resolve().parent
+DEFAULT_CSV_PATH = BASE_DIR.parent / "data" / "processed" / "02_dataset_silver.csv"
 TARGET = "taux_chomage_total_insee"
 DATE_COL = "date"
 DROP_COLS_ALWAYS = ["taux_chomage_ocde"]
